@@ -13,3 +13,10 @@
 				(if(= (check-dup list2 (first list1)) 0)
 					(set-union (rest list1) (cons (first list1) list2))
 					(set-union (rest list1) list2)))))
+
+(define (set-intersection list1 list2)
+	(if(null? list1)
+			(list)
+			(if(= (check-dup list2 (first list1)) 0)
+				(set-intersection (rest list1) list2)
+				(cons (first list1) (set-intersection (rest list1) list2)))))
