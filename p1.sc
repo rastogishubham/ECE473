@@ -19,23 +19,23 @@
 
 (define (set-union list1 list2)
 	(if(null? list1)
-		list2
+		(remove-dups list2)
 		(if(null? list2)
-			list1
-			(if(= (check-dup list2 (first list1)) 0)
-				(set-union (rest list1) (cons (first list1) list2))
-				(set-union (rest list1) list2)))))
+			(remove-dups list1)
+			(if(= (check-dup (remove-dups list2) (first (remove-dups list1))) 0)
+				(set-union (rest (remove-dups list1)) (cons (first (remove-dups list1)) (remove-dups list2)))
+				(set-union (rest (remove-dups list1)) (remove-dups list2))))))
 
 (define (set-intersection list1 list2)
-	(if(null? list1)
+	(if(null? (remove-dups list1))
 			(list)
-			(if(= (check-dup list2 (first list1)) 0)
-				(set-intersection (rest list1) list2)
-				(cons (first list1) (set-intersection (rest list1) list2)))))
+			(if(= (check-dup (remove-dups list2) (first (remove-dups list1))) 0)
+				(set-intersection (rest (remove-dups list1)) (remove-dups list2))
+				(cons (first (remove-dups list1)) (set-intersection (rest (remove-dups list1)) (remove-dups list2))))))
 
 (define (set-minus list1 list2)
-  (if(null? list2)
-  	list1
-  	(if(= (check-dup list1 (first list2)) 1)
-  		(set-minus (remove-one (first list2) list1) (rest list2))
-		(set-minus list1 (rest list2)))))
+  (if(null? (remove-dups list2))
+  	(remove-dups list1)
+  	(if(= (check-dup (remove-dups list1) (first (remove-dups list2))) 1)
+  		(set-minus (remove-one (first (remove-dups list2)) (remove-dups list1)) (rest (remove-dups list2)))
+		(set-minus (remove-dups list1) (rest (remove-dups list2))))))
