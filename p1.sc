@@ -10,14 +10,21 @@
 		((= (first list) x) (rest list))
 		(else (cons (first list) (remove-one x (rest list))))))
 
+(define (remove-dups list1)
+	(if(null? list1)
+		list1
+		(if(= (check-dup (rest list1) (first list1)) 1)
+			(remove-dups (rest list1))
+			(cons (first list1) (remove-dups (rest list1))))))
+
 (define (set-union list1 list2)
-		(if(null? list1)
-			list2
-			(if(null? list2)
-				list1
-				(if(= (check-dup list2 (first list1)) 0)
-					(set-union (rest list1) (cons (first list1) list2))
-					(set-union (rest list1) list2)))))
+	(if(null? list1)
+		list2
+		(if(null? list2)
+			list1
+			(if(= (check-dup list2 (first list1)) 0)
+				(set-union (rest list1) (cons (first list1) list2))
+				(set-union (rest list1) list2)))))
 
 (define (set-intersection list1 list2)
 	(if(null? list1)
@@ -32,4 +39,3 @@
   	(if(= (check-dup list1 (first list2)) 1)
   		(set-minus (remove-one (first list2) list1) (rest list2))
 		(set-minus list1 (rest list2)))))
-
