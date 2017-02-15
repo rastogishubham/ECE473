@@ -76,3 +76,8 @@
 		(if(eq? (first list) x)
 			1
 			(check-dup (rest list) x))))
+;Merges two lists together usually to merge a prop list and a bin list
+(define (merge-lists list-props list-bin merged-list)
+	(if (null? list-props)
+		merged-list
+		(merge-lists (rest list-props) (rest list-bin) (append merged-list (list (list (first list-props) (first list-bin)))))))
