@@ -76,8 +76,20 @@
 		(if(eq? (first list) x)
 			1
 			(check-dup (rest list) x))))
+
 ;Merges two lists together usually to merge a prop list and a bin list
 (define (merge-lists list-props list-bin merged-list)
 	(if (null? list-props)
-		merged-list
+		(append merged-list (list #f))
 		(merge-lists (rest list-props) (rest list-bin) (append merged-list (list (list (first list-props) (first list-bin)))))))
+
+;Creates a list of all bound values for a list of propositions
+(define (get-all-lists list-all list-props list-len exp-val)
+	(if (= 0 exp-val)
+		list-all
+		(get-all-lists (cons (merge-lists list-props (create-bin-list (- exp-val 1) list-len) (list)) list-all) list-props list-len (- exp-val 1))))
+
+;Evaluate expression
+;(define (eval-exp phi)
+;	(case phi
+;		((and) and)))
