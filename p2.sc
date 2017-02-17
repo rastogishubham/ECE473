@@ -35,12 +35,6 @@
 (define (get-2-exp vars)
 	(expt 2 vars))
 
-;returns a list of false for the given length
-;(define (get-false-list maxi cnt list-false)
-;	(if (= maxi cnt)
-;		list-false
-;		(get-false-list maxi (+ cnt 1) (cons #f list-false))))
-
 ;appends false to a list of bools
 (define (append-false num list-bin)
 	(if (= num 0)
@@ -77,11 +71,13 @@
 			1
 			(check-dup (rest list) x))))
 
+;Replaces everything in a list with its truth value
 (define (replace phi list-merge)
 	(if (null? list-merge)
 		phi
 		(replace (replace-element phi (first (first list-merge)) (second (first list-merge))) (rest list-merge))))
 
+;Replaces a specifc proposition with its truth value
 (define (replace-element phi old new)
 	(if (null? phi)
 		phi
@@ -94,7 +90,7 @@
 ;Merges two lists together usually to merge a prop list and a bin list
 (define (merge-lists list-props list-bin merged-list)
 	(if (null? list-props)
-		(append merged-list (list #f))
+		merged-list
 		(merge-lists (rest list-props) (rest list-bin) (append merged-list (list (list (first list-props) (first list-bin)))))))
 
 ;Creates a list of all bound values for a list of propositions
@@ -103,3 +99,31 @@
 		list-all
 		(get-all-lists (cons (merge-lists list-props (create-bin-list (- exp-val 1) list-len) (list)) list-all) list-props list-len (- exp-val 1))))
 
+;And's two things together
+(define (new-and x y)
+  (and x y))
+
+;or's two things together
+(define (new-or x y)
+  (or x y))
+
+;Used to reduce a list of values to and
+(define (my-and list-vals)
+	(reduce new-and list-vals #t))
+
+;Used to reduce a list of values to or
+(define (my-or list-vals)
+	(reduce new-or list-vals #f))
+
+;Does the not for an argument
+(define (my-not arg)
+	(not (first arg)))
+
+;main calculation function
+(define (calculate phi)
+	(if (boolean? phi)
+		phi
+		(case (first phi)
+			((and) (my-and (map calculate (rest phi))))
+			((or) (my-or (map calculate (rest phi))))
+			((not) (my-not (map calculate (rest phi)))))))
