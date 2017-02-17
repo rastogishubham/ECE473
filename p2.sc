@@ -1,6 +1,8 @@
 ;Main function of program
-(define (truth-table phi) 
-	(get-all-lists (list) (get-props phi (list)) (list-len (get-props phi (list)) 0) (get-2-exp (list-len (get-props phi (list)) 0))))
+(define (truth-table phi)
+	(get-all-lists phi (list) (get-props phi (list)) 
+	(list-len (get-props phi (list)) 0) 
+	(get-2-exp (list-len (get-props phi (list)) 0))))
 
 ;Checks whether input is a proposition or not
 (define (check-prop sym)
@@ -52,7 +54,8 @@
 ;creates a list of a number in binary form with #t -> 1 and #f -> 0
 (define (create-bin-list num dig)
 	(if (< (list-len (convert-to-binary num (list)) 0) dig)
-		(append-false (- dig (list-len (convert-to-binary num (list)) 0)) (convert-to-binary num (list)))
+		(append-false (- dig (list-len (convert-to-binary num (list)) 0))
+		(convert-to-binary num (list)))
 		(convert-to-binary num (list))))
 
 ;removes duplicates in a list
@@ -75,7 +78,8 @@
 (define (replace phi list-merge)
 	(if (null? list-merge)
 		phi
-		(replace (replace-element phi (first (first list-merge)) (second (first list-merge))) (rest list-merge))))
+		(replace (replace-element phi (first (first list-merge))
+		(second (first list-merge))) (rest list-merge))))
 
 ;Replaces a specifc proposition with its truth value
 (define (replace-element phi old new)
@@ -91,13 +95,18 @@
 (define (merge-lists list-props list-bin merged-list)
 	(if (null? list-props)
 		merged-list
-		(merge-lists (rest list-props) (rest list-bin) (append merged-list (list (list (first list-props) (first list-bin)))))))
+		(merge-lists (rest list-props) (rest list-bin)
+		(append merged-list (list (list (first list-props) (first list-bin)))))))
 
 ;Creates a list of all bound values for a list of propositions
-(define (get-all-lists list-all list-props list-len exp-val)
+(define (get-all-lists phi list-all list-props list-len exp-val)
 	(if (= 0 exp-val)
 		list-all
-		(get-all-lists (cons (merge-lists list-props (create-bin-list (- exp-val 1) list-len) (list)) list-all) list-props list-len (- exp-val 1))))
+		(get-all-lists phi (cons (list (merge-lists list-props 
+		(create-bin-list (- exp-val 1) list-len) (list)) 
+		(calculate (replace phi (merge-lists list-props 
+		(create-bin-list (- exp-val 1) list-len) (list))))) 
+		list-all) list-props list-len (- exp-val 1))))
 
 ;And's two things together
 (define (new-and x y)
