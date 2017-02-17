@@ -1,6 +1,6 @@
 ;Main function of program
 (define (truth-table phi) 
-	(get-2-exp (list-len (get-props phi (list)) 0)))
+	(get-all-lists (list) (get-props phi (list)) (list-len (get-props phi (list)) 0) (get-2-exp (list-len (get-props phi (list)) 0))))
 
 ;Checks whether input is a proposition or not
 (define (check-prop sym)
@@ -33,7 +33,7 @@
 
 ;Gets 2^vars
 (define (get-2-exp vars)
-	(display (expt 2 vars)))
+	(expt 2 vars))
 
 ;returns a list of false for the given length
 ;(define (get-false-list maxi cnt list-false)
@@ -77,6 +77,20 @@
 			1
 			(check-dup (rest list) x))))
 
+(define (replace phi list-merge)
+	(if (null? list-merge)
+		phi
+		(replace (replace-element phi (first (first list-merge)) (second (first list-merge))) (rest list-merge))))
+
+(define (replace-element phi old new)
+	(if (null? phi)
+		phi
+		(if (eq? (first phi) old)
+			(cons new (replace-element (rest phi) old new))
+			(if (list? (first phi))
+				(cons (replace-element (first phi) old new) (replace-element (rest phi) old new))
+				(cons (first phi) (replace-element (rest phi) old new))))))
+
 ;Merges two lists together usually to merge a prop list and a bin list
 (define (merge-lists list-props list-bin merged-list)
 	(if (null? list-props)
@@ -89,7 +103,3 @@
 		list-all
 		(get-all-lists (cons (merge-lists list-props (create-bin-list (- exp-val 1) list-len) (list)) list-all) list-props list-len (- exp-val 1))))
 
-;Evaluate expression
-;(define (eval-exp phi)
-;	(case phi
-;		((and) and)))
