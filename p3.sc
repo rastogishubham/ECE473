@@ -1,3 +1,5 @@
+
+;;From p2.sc solutions
 (define (propositions-in formula)
  (cond ((symbol? formula) (list formula))
        ((boolean? formula) '())
@@ -11,6 +13,7 @@
 	 (else (panic "Unrecognized formula"))))
        (else (panic "Unrecognized formula"))))
 
+;;From p2.sc solutions
 (define (all-truth-assignments propositions)
  (if (null? propositions)
      '(())
@@ -22,12 +25,14 @@
 		    (cons (list (first propositions) #f) truth-assignment))
 		   truth-assignments)))))
 
+;;From p2.sc solutions
 (define (lookup-proposition proposition truth-assignment)
  (cond ((null? truth-assignment) (panic "Proposition not in truth assignment"))
        ((eq? proposition (first (first truth-assignment)))
 	(second (first truth-assignment)))
        (else (lookup-proposition proposition (rest truth-assignment)))))
 
+;;From p2.sc solutions
 (define (boolean-evaluate formula truth-assignment)
  (cond ((symbol? formula) (lookup-proposition formula truth-assignment))
        ((boolean? formula) formula)
@@ -45,67 +50,36 @@
 	 (else (panic "Unrecognized formula"))))
        (else (panic "Unrecognized formula"))))
 
+;;From p2.sc solutions
 (define (truth-table formula)
  (map (lambda (truth-assignment)
        (list truth-assignment (boolean-evaluate formula truth-assignment)))
       (all-truth-assignments (propositions-in formula))))
 
-(define *simplify-rules*
- '(((+) -~-> 0)
-   ((+ e) -~-> e)
-   ((+ e 0) -~-> e)
-   ((+ 0 e) -~-> e)
-   ((+ e1 e2 e3 e...) -~-> (+ e1 (+ e2 (+ e3 e...))))
-   ((- e) -~-> (* -1 e))
-   ((- e1 e2) -~-> (+ e1 (- e2)))
-   ((- e1 e2 e3 e...) -~-> (- e1 (+ e2 e3 e...)))
-   ((*) -~-> 1)
-   ((* e) -~-> e)
-   ((* e 0) -~-> 0)
-   ((* 0 e) -~-> 0)
-   ((* e 1) -~-> e)
-   ((* 1 e) -~-> e)
-   ((* e1 e2 e3 e...) -~-> (* e1 (* e2 (* e3 e...))))
-   ((/ e) -~-> (expt e -1))
-   ((/ e1 e2) -~-> (* e1 (/ e2)))
-   ((/ e1 e2 e3 e...) -~-> (/ e1 (* e2 e3 e...)))
-   ((expt e 1) -~-> e)
-   ((sqrt e) -~-> (expt e 0.5))
-   ((and e1 e1) -~> (and e1))))
+;;From slides lecture 6
+(define (boolean-simplify e) (rewrite *rules* e))
 
-(define (simplify e) (rewrite *rules* e))
-
-;;; A rule is:
-;;;  (e1 -~-> e2) where e1 and e2 are patterns
-
-;;; A pattern is:
-;;;  a pattern variable,
-;;;  an expression constant, or
-;;;  (p1 ... pn) where p1 ... pn are patterns
-
-;;; (match p e) ==> either #f or a list of bindings
-
-;;; A binding is:
-;;;  (p e) where p is a pattern variable and e is an expression
-
-;;; (rewrite '(+ (* 2 (expt x 3)) 0) '(((+ e 0) -~-> e)))
-
+;;From rewrite.sc
 (define (pattern-variable? p) (member p '(phi phi1 phi2 phi3)))
 
+;;From slides lecture 6
 (define (pattern-list-variable? p) (member p '(phi... phi1... phi2... phi3...)))
 
+;;From rewrite.sc
 (define (inconsistent-binding? b1 b2)
  (and (eq? (first b1) (first b2)) (not (equal? (second b1) (second b2)))))
 
+;;From rewrite.sc
 (define (inconsistent-bindings? r1 r2)
  (some (lambda (b1) (some (lambda (b2) (inconsistent-binding? b1 b2)) r2)) r1))
 
+;;From rewrite.sc
 (define (merge-results-of-match r1 r2)
  (if (or (eq? r1 #f) (eq? r2 #f) (inconsistent-bindings? r1 r2))
      #f
      (append r1 r2)))
 
-
+;;From slides lecture 6
 (define (match pattern expression)
 (cond ((pattern-variable? pattern) (list (list pattern expression)))
    ((pattern-list-variable? pattern)
@@ -122,7 +96,7 @@
 ((equal? pattern expression) '())
 (else (list #f))))
 
-
+;;From slides lecture 6
 (define (instantiate pattern bindings)
    (cond ((pattern-variable? pattern)
       (lookup-pattern-variable pattern bindings))
@@ -137,72 +111,34 @@
       (instantiate (rest pattern) bindings)))
 (else pattern)))
 
-;;; (match 'x 'x) ==> ()
-;;; (match '+ '*) ==> #f
-
-;;; (match '(e1 e2) '(x y)) ==> ((e1 x) (e2 y))
-;;;   (match 'e1 'x) ==> ((e1 x))
-;;;   (match 'e2 'y) ==> ((e2 y))
-
-;;; (match '(e1 e1) '(x y)) ==> #f
-;;;   (match 'e1 'x) ==> ((e1 x))
-;;;   (match 'e1 'y) ==> ((e2 y))
-
-;;; (match '(e1) '(x y)) ==> #f
-
-;;; (match '(e1 e2) '(x)) ==> #f
-
-;;; (match '(+ e2) '(* x)) ==> #f
-;;;   (match '+ '*) ==> #f
-;;;   (match 'e2 'x) ==> ((e2 x))
-
-;;; (match '(e1 e2) 'x) ==> #f
-
-;;; (and e1 e1) -~-> (and e1)
-;;; (and p p)
-;;; (match '(and e1 e1) '(and p p)) ==> ((e1 p))
-
+;;From slides lecture 6
 (define (lookup-pattern-variable p bindings)
  (cond ((null? bindings) (panic "unbound pattern variable"))
        ((eq? (first (first bindings)) p) (second (first bindings)))
        (else (lookup-pattern-variable p (rest bindings)))))
 
-;(define (instantiate p bindings)
- ;(define (instantiate-with-bindings p) (instantiate p bindings))
- ;(cond ((pattern-variable? p) (lookup-pattern-variable p bindings))
-  ;     ((list? p) (map instantiate-with-bindings p))
-   ;    (else p)))
-
-;(define (first-matching-rule e rules)
- ;(cond ((null? rules) #f)
-  ;     ((not (eq? (match (first (first rules)) e) #f)) (first rules))
-   ;    (else (first-matching-rule e (rest rules)))))
-
-;(define (rewrite e rules)
- ;(define (rewrite-with-rules e) (rewrite e rules))
- ;(let ((e (if (list? e) (map rewrite-with-rules e) e)))
-  ;(let ((rule (first-matching-rule e rules)))
-   ;(if (eq? rule #f)
-    ;   e
-     ;  (rewrite (instantiate (third rule) (match (first rule) e)) rules)))))
-
+;;From slides lecture 6
 (define (applicable? rule expression)
    (not (memq #f (match (first rule) expression))))
 
+;;From slides lecture 6
 (define (first-applicable-rule rules expression)
    (cond ((null? rules) #f)
    ((applicable? (first rules) expression) (first rules))
    (else (first-applicable-rule (rest rules) expression))))
 
+;;From slides lecture 6
 (define (apply-rule rule expression)
 (instantiate (third rule) (match (first rule) expression)))
 
+;;From slides lecture 6
 (define (apply-rules rules expression)
    (let ((rule (first-applicable-rule rules expression)))
       (if rule
       (rewrite rules (apply-rule rule expression))
    expression)))
 
+;;From slides lecture 6
 (define (rewrite rules expression)
    (if (list? expression)
       (apply-rules
@@ -210,13 +146,6 @@
       (map (lambda (expression) (rewrite rules expression))
          expression))
    expression))
-
-
-;;; (and e1 e1) -~-> (and e1)
-
-;;; (f (and p p)) -~-> (f (and p))
-
-;;; (rewrite '(f (and p p)) *rules*) ==> (f (and p))
 
 (define *rules*
  '(((not #f) -~> #t)
@@ -229,11 +158,17 @@
    ((and #t phi...) -~> (and phi...))
    ((and #f phi...) -~> #f)
    ((and phi1 phi2 phi3 phi...) -~> (and phi1 (and phi2 (and phi3 phi...))))
+   ((and phi (not phi) phi...) -~> #f)
+   ((and (not phi) phi phi...) -~> #f)
    ((or) -~> #f)
    ((or phi) -~> phi)
    ((or phi #f) -~> (or phi))
    ((or phi #t) -~> #t)
    ((or #t phi...) -~> #t)
    ((or #f phi...) -~> (or phi...))
-   ((or phi1 phi2 phi3 phi...) -~> (or phi1 (or phi2 (or phi3 phi...))))))
+   ((or phi1 phi2 phi3 phi...) -~> (or phi1 (or phi2 (or phi3 phi...)))
+   ((or phi (not phi) phi...) -~> #t)
+   ((or (not phi) phi phi...) -~> #t))))
+
+
 
