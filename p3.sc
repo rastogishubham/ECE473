@@ -166,9 +166,16 @@
    ((or phi #t) -~> #t)
    ((or #t phi...) -~> #t)
    ((or #f phi...) -~> (or phi...))
-   ((or phi1 phi2 phi3 phi...) -~> (or phi1 (or phi2 (or phi3 phi...)))
+   ((or phi1 phi2 phi3 phi...) -~> (or phi1 (or phi2 (or phi3 phi...))))
    ((or phi (not phi) phi...) -~> #t)
-   ((or (not phi) phi phi...) -~> #t))))
+   ((or (not phi) phi phi...) -~> #t)))
 
-
-
+(define (truth-tables-match? p pp)
+ (let ((I (all-truth-assignments (propositions-in p))))
+  (equal?
+   (map (lambda (truth-assignment)
+	 (list truth-assignment
+	       (boolean-evaluate p truth-assignment))) I)
+   (map (lambda (truth-assignment)
+	 (list truth-assignment
+	       (boolean-evaluate pp truth-assignment))) I))))
