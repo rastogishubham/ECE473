@@ -219,10 +219,15 @@
 ;;; (rewrite '(f (and p p)) *rules*) ==> (f (and p))
 
 (define *rules*
- '(((not #f) -~> (#t))
-   ((not #t) -~> (#f))
+ '(((not #f) -~> #t)
+   ((not #t) -~> #f)
    ((not (not phi)) -~> (phi))
-   ((and) -~> (#t))
-   ((and phi) -~> (phi))
-   ((or phi) -~> (phi))
-   ((and #t phi...) -~> (and phi...))))
+   ((and) -~> #t)
+   ((and phi) -~> phi)
+   ((or phi) -~> phi)
+   ((and phi #f) -~> #f)
+   ((and phi #t) -~> (and phi))
+   ((and #t phi...) -~> (and phi...))
+   ((and #f phi...) -~> #f)
+   ((and phi1 phi2 phi3 phi...) -~> (and phi1 (and phi2 (and phi3 phi...))))))
+
