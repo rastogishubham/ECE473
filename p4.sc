@@ -46,6 +46,24 @@
 			1
 			(check-legal-move move (rest list-moves)))))
 
+;Change a row to reflect move of player
+(define (change-row x row curr-col player new-row row-len)
+	(if (= curr-col row-len)
+		new-row
+		(if (= x curr-col)
+			(change-row x (rest row) (+ curr-col 1) player (append new-row (list player)) row-len)
+			(change-row x (rest row) (+ curr-col 1) player (append new-row (list (first row))) row-len))))
+
+;Go to row specified by move and change its correct column to make move
+(define (go-to-row x y b curr-row player b-len b-prime)
+	(if (= b-len curr-row)
+		b-prime
+		(if (= y curr-row)
+			(go-to-row x y (rest b) (+ curr-row 1) player b-len (append b-prime (list (change-row x (first b) 0 player (list) b-len))))
+			(go-to-row x y (rest b) (+ curr-row 1) player b-len (append b-prime (list (first b)))))))
+
 ;Makes a move m on board b and returns the new board after checking if move is legal oherwise just returns original board
 (define (make-move m b)
-	b)
+	(if (= (check-legal-move (first (rest m)) (moves b)) 0)
+		b
+		(go-to-row (- (first (first (rest m))) 1) (- (last (first (rest m))) 1) b 0 (first m) (len-row 0 (first b)) (list))))
