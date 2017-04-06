@@ -67,3 +67,34 @@
 	(if (= (check-legal-move (first (rest m)) (moves b)) 0)
 		b
 		(go-to-row (- (first (first (rest m))) 1) (- (last (first (rest m))) 1) b 0 (first m) (len-row 0 (first b)) (list))))
+
+;Checks a row to see if a player won or not
+(define (check-row row player row-len curr-col iter)
+	(if (not (= player curr-col))
+		0
+		(if (= iter row-len)
+			1
+			(check-row (rest row) player row-len (first row) (+ iter 1)))))
+
+;Checks if a player won by getting the rows
+(define (win-row player b iter side-len)
+	(if (= iter side-len)
+		0
+		(if (= 1 (check-row (first b) player side-len (first (first b)) 0))
+			1
+			(win-row player (rest b) (+ iter 1) side-len))))
+
+;Returns which player won through rows only
+(define (win-player-row player-list b side-len)
+	(if (null? player-list)
+		0
+		(if (= (win-row (first player-list) b 0 side-len) 1)
+			(first player-list)
+			(win-player-row (rest player-list) b side-len))))
+
+;Checks Column to see if a player won or not
+;(define (check-col ))
+
+;Returns if a player won
+(define (win b)
+	1)
