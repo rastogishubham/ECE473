@@ -29,5 +29,11 @@
 	(if (= x len-row)
 		list-moves
 		(if (= (first row) 0)
-			(get-row-moves (+ x 1) y (rest row) (append list-moves (list (list x y))) len-row)
+			(get-row-moves (+ x 1) y (rest row) (append list-moves (list (list (+ x 1) (+ y 1)))) len-row)
 			(get-row-moves (+ x 1) y (rest row) list-moves len-row))))
+
+;Returns list of all legal moves for a board
+(define (get-moves b len y list-moves)
+	(if (null? b)
+		list-moves
+		(get-moves (rest b) len (+ y 1) (get-row-moves 0 y (first b) list-moves len))))
