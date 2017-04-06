@@ -14,10 +14,6 @@
 (define (initial-board n)
 	(generate-board n n (list)))
 
-;Returns the list of legal moves for a player in board b
-(define (moves b)
-  0)
-
 ;Gets length of row
 (define (len-row len row)
 	(if (null? row)
@@ -37,3 +33,7 @@
 	(if (null? b)
 		list-moves
 		(get-moves (rest b) len (+ y 1) (get-row-moves 0 y (first b) list-moves len))))
+
+;Returns the list of legal moves for a player in board b
+(define (moves b)
+	(get-moves b (len-row 0 (first b)) 0 (list)))
