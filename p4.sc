@@ -14,7 +14,6 @@
 (define (initial-board n)
 	(generate-board n n (list)))
 
-
 ;Returns the list of legal moves for a player in board b
 (define (moves b)
   0)
@@ -25,6 +24,10 @@
 		len
 		(len-row (+ len 1) (rest row))))
 
-;Checks row to see if a move is allowed or not
-(define (check-row x y row)
-	0)
+;Get's legal moves of each row
+(define (get-row-moves x y row list-moves len-row)
+	(if (= x len-row)
+		list-moves
+		(if (= (first row) 0)
+			(get-row-moves (+ x 1) y (rest row) (append list-moves (list (list x y))) len-row)
+			(get-row-moves (+ x 1) y (rest row) list-moves len-row))))
