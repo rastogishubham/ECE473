@@ -37,3 +37,15 @@
 ;Returns the list of legal moves for a player in board b
 (define (moves b)
 	(get-moves b (len-row 0 (first b)) 0 (list)))
+
+;Checks if move is legal or not
+(define (check-legal-move move list-moves)
+	(if (null? list-moves)
+		1
+		(if (eq? move (first list-moves))
+			0
+			(check-legal-move move (rest list-moves)))))
+
+;Makes a move m on board b and returns the new board after checking if move is legal oherwise just returns original board
+(define (make-move m b)
+	b)
