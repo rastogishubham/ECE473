@@ -92,8 +92,33 @@
 			(first player-list)
 			(win-player-row (rest player-list) b side-len))))
 
-;Checks Column to see if a player won or not
-;(define (check-col ))
+;Returns which player won through columns only
+(define (win-player-col player-list b side-len)
+	(win-player-row player-list (transpose b) side-len))
+
+;Transposes board
+(define (transpose b)
+	(apply map list b))
+
+;Gets the number in the diagonal in the current row
+(define (get-diagonal-num row-num col-iter row)
+	(if (= col-iter row-num)
+		(first row)
+		(get-diagonal-num row-num (+ col-iter 1) (rest row))))
+
+;Gets the list of numbers in the diagonal
+(define (get-diagonal-list b list-diag row-num)
+	(if (null? b)
+		list-diag
+		(get-diagonal-list (rest b) (append list-diag (list (get-diagonal-num row-num 0 (first b)))) (+ row-num 1))))
+
+;Checks if current player wins in given diagonal
+(define (win-diag player b iter side-len)
+	(if (= iter 2)
+		0
+		(if (= 1 (check-row (get-diagonal-list b (list) 0) player side-len (first (get-diagonal-list b (list) 0)) 0))
+			1
+			(win-diag player (reverse b) (+ iter 1) side-len))))
 
 ;Returns if a player won
 (define (win b)
