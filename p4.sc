@@ -112,13 +112,21 @@
 		list-diag
 		(get-diagonal-list (rest b) (append list-diag (list (get-diagonal-num row-num 0 (first b)))) (+ row-num 1))))
 
-;Checks if current player wins in given diagonal
+;Checks if current player wins any diagonal
 (define (win-diag player b iter side-len)
 	(if (= iter 2)
 		0
 		(if (= 1 (check-row (get-diagonal-list b (list) 0) player side-len (first (get-diagonal-list b (list) 0)) 0))
 			1
 			(win-diag player (reverse b) (+ iter 1) side-len))))
+
+;Returns which player wins a diagonal
+(define (win-player-diag player-list b side-len)
+	(if (null? player-list)
+		0
+		(if (= (win-diag (first player-list) b 0 side-len) 1)
+			(first player-list)
+			(win-player-diag (rest player-list) b side-len))))
 
 ;Returns if a player won
 (define (win b)
