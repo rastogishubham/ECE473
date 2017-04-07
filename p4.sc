@@ -130,4 +130,10 @@
 
 ;Returns if a player won
 (define (win b)
-	1)
+	(if (not (= (win-player-row (list 1 -1) b (len-row 0 (first b))) 0))
+		(win-player-row (list 1 -1) b (len-row 0 (first b)))
+		(if (not (= (win-player-col (list 1 -1) b (len-row 0 (first b))) 0))
+			(win-player-col (list 1 -1) b (len-row 0 (first b)))
+			(if (not (= (win-player-diag (list 1 -1) b (len-row 0 (first b))) 0))
+				(win-player-diag (list 1 -1) b (len-row 0 (first b)))
+				0))))
